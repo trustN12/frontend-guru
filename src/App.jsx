@@ -31,9 +31,10 @@ const App = () => (
       publishableKey={PUBLISHABLE_KEY}
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/dashboard"
+      signInFallbackRedirectUrl="/"
       signUpFallbackRedirectUrl="/"
       afterSignOutUrl="/"
+      
     >
       <TooltipProvider>
         <Toaster />

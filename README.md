@@ -10,3 +10,4 @@
 - emailjs/browser@4.4.1
 - clerk/clerk-react@5.24.1
 - tanstack/react-query@5.56.2
+
