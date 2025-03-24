@@ -10,5 +10,8 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: '/',
+  base: './', // Ensures correct relative paths for assets
+  build: {
+    outDir: 'dist', // Ensures Vercel deploys the correct folder
+  },
 })
