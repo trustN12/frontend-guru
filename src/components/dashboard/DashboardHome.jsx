@@ -67,9 +67,9 @@ const DashboardHome = ({ user, enrolledCourses }) => {
           <div className="border-b border-border pb-4">
             <p className="font-medium">New React Course Coming Soon</p>
             <p className="text-sm text-muted-foreground">
-              A new advanced React patterns course will be available next month.
+              A new advanced React patterns course will be available soon.
             </p>
-            <p className="text-xs text-muted-foreground mt-1">June 15, 2023</p>
+            <p className="text-xs text-muted-foreground mt-1">March, 2025</p>
           </div>
           <div>
             <p className="font-medium">Welcome to the Academy!</p>
@@ -77,7 +77,6 @@ const DashboardHome = ({ user, enrolledCourses }) => {
               Thank you for joining Frontend Guru Academy. Browse available
               courses to get started.
             </p>
-            <p className="text-xs text-muted-foreground mt-1">June 10, 2023</p>
           </div>
         </div>
       </div>

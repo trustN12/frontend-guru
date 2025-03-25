@@ -10,7 +10,7 @@ const ProtectedRoute = () => {
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
-      toast.error("Please sign in to access this page", {
+      toast.error("Please sign in to access all the pages!!", {
         description: "You need to be signed in to view this content"
       });
       navigate('/sign-in');

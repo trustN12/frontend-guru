@@ -79,7 +79,7 @@ const Footer = () => {
                 <a href="https://github.com/trustN12" className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary text-muted-foreground hover:text-primary hover:bg-secondary/80 transition-colors">
                   <Github size={16} />
                 </a>
-                <a href="#" className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary text-muted-foreground hover:text-primary hover:bg-secondary/80 transition-colors">
+                <a href="https://www.linkedin.com/in/nabarun-biswas-102bb118a/" className="w-8 h-8 flex items-center justify-center rounded-full bg-secondary text-muted-foreground hover:text-primary hover:bg-secondary/80 transition-colors">
                   <Linkedin size={16} />
                 </a>
               </li>

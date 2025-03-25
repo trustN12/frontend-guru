@@ -77,7 +77,7 @@ const Dashboard = () => {
     toast.success("Progress updated successfully");
   };
 
-  // Available courses data
+  // Available courses data with videos
   const availableCourses = [
     {
       id: 1,
@@ -87,6 +87,32 @@ const Dashboard = () => {
       price: 299900, // In paise (₹2999)
       duration: "8 weeks",
       topics: ["ES6+", "Promises", "Closures", "Functional JS"],
+      videos: [
+        {
+          id: 1,
+          title: "Introduction to JavaScript",
+          duration: "15:20",
+          url: "https://www.youtube.com/embed/PkZNo7MFNFg",
+        },
+        {
+          id: 2,
+          title: "Variables and Data Types",
+          duration: "22:45",
+          url: "https://www.youtube.com/embed/DHjqpvDnNGE",
+        },
+        {
+          id: 3,
+          title: "Functions and Scope",
+          duration: "18:30",
+          url: "https://www.youtube.com/embed/xUI5Tsl2JpY",
+        },
+        {
+          id: 4,
+          title: "Objects and Arrays",
+          duration: "20:15",
+          url: "https://www.youtube.com/embed/W6NZfCO5SIk",
+        },
+      ],
     },
     {
       id: 2,
@@ -96,6 +122,32 @@ const Dashboard = () => {
       price: 399900, // In paise (₹3999)
       duration: "10 weeks",
       topics: ["Components", "Props & State", "Hooks", "JSX"],
+      videos: [
+        {
+          id: 1,
+          title: "React Basics",
+          duration: "20:15",
+          url: "https://www.youtube.com/embed/w7ejDZ8SWv8",
+        },
+        {
+          id: 2,
+          title: "Components and Props",
+          duration: "25:10",
+          url: "https://www.youtube.com/embed/0sSYmRImgRY",
+        },
+        {
+          id: 3,
+          title: "State and Lifecycle",
+          duration: "23:05",
+          url: "https://www.youtube.com/embed/4ORZ1GmjaMc",
+        },
+        {
+          id: 4,
+          title: "Hooks Deep Dive",
+          duration: "28:45",
+          url: "https://www.youtube.com/embed/TNhaISOUy6Q",
+        },
+      ],
     },
     {
       id: 3,
@@ -105,6 +157,32 @@ const Dashboard = () => {
       price: 249900, // In paise (₹2499)
       duration: "6 weeks",
       topics: ["Flexbox & Grid", "Responsive Design", "Animations", "Tailwind"],
+      videos: [
+        {
+          id: 1,
+          title: "CSS Fundamentals",
+          duration: "16:40",
+          url: "https://www.youtube.com/embed/1Rs2ND1ryYc",
+        },
+        {
+          id: 2,
+          title: "Tailwind Basics",
+          duration: "19:55",
+          url: "https://www.youtube.com/embed/pfaSUYaSgRo",
+        },
+        {
+          id: 3,
+          title: "Responsive Design",
+          duration: "21:30",
+          url: "https://www.youtube.com/embed/srvUrASNj0s",
+        },
+        {
+          id: 4,
+          title: "Advanced Animations",
+          duration: "24:20",
+          url: "https://www.youtube.com/embed/D6EiRSRhsbQ",
+        },
+      ],
     },
   ];
 
@@ -147,7 +225,13 @@ const Dashboard = () => {
               />
             )}
 
-            {activeTab === "schedule" && <Schedule />}
+            {activeTab === "schedule" && (
+              <Schedule
+                user={user}
+                enrolledCourses={enrolledCourses}
+                availableCourses={availableCourses}
+              />
+            )}
 
             {activeTab === "buy-courses" && (
               <BuyCourses

@@ -51,10 +51,10 @@ const About = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="relative"
             >
-              <div className="aspect-auto bg-gradient-to-tr from-primary/5 to-primary/20 rounded-2xl p-10 md:p-8 flex items-center justify-center">
+              <div className="aspect-auto from-primary/5 to-primary/20 rounded-2xl p-10 md:p-8 flex items-center bg-[#FEF3C7D9] justify-center">
                 <div className="w-full h-full overflow-hidden rounded-lg">
                   <img 
-                    src="/profile-banner.png" 
+                    src="/banner.png" 
                     alt="Nabarun Biswas" 
                     className="w-full h-full object-contain"
                   />

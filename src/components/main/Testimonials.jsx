@@ -48,7 +48,7 @@ const testimonials = [
     id: 6,
     name: "Ananya Bose",
     role: "Works at Newton School",
-    image: "https://i.pravatar.cc/150?img=31", // Bengali woman avatar (Kolkata)
+    image: "/beng.jpeg", // Bengali woman avatar (Kolkata)
     quote: "From UI/UX design to full-stack development, Nabarun's courses cover it all! The hands-on projects helped me build a strong portfolio.",
     rating: 5,
   },

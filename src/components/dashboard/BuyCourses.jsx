@@ -1,5 +1,5 @@
 import SectionHeading from "../main/SectionHeading";
-import { Book, ShoppingCart } from "lucide-react";
+import { Book, ShoppingCart, Video } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner"; 
 import { sendPurchaseNotification } from "../../utils/emailjs";
@@ -48,7 +48,7 @@ const BuyCourses = ({
         image: "/programmer.png",
         handler: function (response) {
           // Payment successful
-          // Add course to enrolled courses with initial progress
+          // Add course to enrolled courses with initial progress and video access
           const newCourse = {
             ...course,
             enrolledDate: new Date().toISOString(),
@@ -57,6 +57,7 @@ const BuyCourses = ({
             totalLessons: Math.floor(Math.random() * 10) + 10, // Random number of lessons between 10-20
             paymentId: response.razorpay_payment_id,
             userId: user.id,
+            videosUnlocked: true,
           };
 
           // Update state and local storage
@@ -73,7 +74,9 @@ const BuyCourses = ({
             user
           );
 
-          toast.success(`Successfully enrolled in ${course.title}`);
+          toast.success(
+            `Successfully enrolled in ${course.title}. Course videos are now available in your schedule.`
+          );
           setIsProcessingPayment(false);
         },
         prefill: {
@@ -112,7 +115,8 @@ const BuyCourses = ({
           </h3>
           <p className="text-sm">
             All payments are processed securely via Razorpay. After purchase,
-            your course will be instantly available in "My Courses".
+            your course will be instantly available in "My Courses" and course
+            videos will be unlocked in "My Schedule".
           </p>
           <p className="mt-2 text-sm">
             If you face any issues with payment, please contact us at
@@ -141,6 +145,10 @@ const BuyCourses = ({
                     {topic}
                   </span>
                 ))}
+              </div>
+              <div className="flex items-center text-sm text-muted-foreground mb-3">
+                <Video size={16} className="mr-1" />
+                <span>{course.videos?.length || 0} video lessons</span>
               </div>
               <div className="flex justify-between items-center text-sm text-muted-foreground mb-1">
                 <span>Duration: {course.duration}</span>
