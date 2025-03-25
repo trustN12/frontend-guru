@@ -1,0 +1,185 @@
+import SectionHeading from "../main/SectionHeading";
+import { Book, ShoppingCart } from "lucide-react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { toast } from "sonner"; 
+import { sendPurchaseNotification } from "../../utils/emailjs";
+
+const BuyCourses = ({
+  user,
+  enrolledCourses,
+  setEnrolledCourses,
+  isProcessingPayment,
+  setIsProcessingPayment,
+  availableCourses,
+  loadRazorpay,
+}) => {
+  const handlePayment = async (course) => {
+    if (!user) {
+      toast.error("Please sign in to purchase courses");
+      return;
+    }
+
+    setIsProcessingPayment(true);
+
+    // Check if course is already enrolled by this user
+    if (
+      enrolledCourses.some((c) => c.id === course.id && c.userId === user.id)
+    ) {
+      toast.error(`You're already enrolled in ${course.title}`);
+      setIsProcessingPayment(false);
+      return;
+    }
+
+    try {
+      // Load Razorpay script first
+      const razorpayInstance = await loadRazorpay();
+      if (!razorpayInstance) {
+        toast.error("Failed to load payment gateway. Please try again later.");
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      const options = {
+        key: "rzp_test_7FEQanUQWAA66x", // Test key
+        amount: course.price,
+        currency: "INR",
+        name: "Frontend Guru Academy",
+        description: `Enrollment for ${course.title}`,
+        image: "/programmer.png",
+        handler: function (response) {
+          // Payment successful
+          // Add course to enrolled courses with initial progress
+          const newCourse = {
+            ...course,
+            enrolledDate: new Date().toISOString(),
+            progress: 0,
+            completedLessons: 0,
+            totalLessons: Math.floor(Math.random() * 10) + 10, // Random number of lessons between 10-20
+            paymentId: response.razorpay_payment_id,
+            userId: user.id,
+          };
+
+          // Update state and local storage
+          const updatedCourses = [...enrolledCourses, newCourse];
+          setEnrolledCourses(updatedCourses);
+          localStorage.setItem(
+            "enrolledCourses",
+            JSON.stringify(updatedCourses)
+          );
+
+          // Send email notification
+          sendPurchaseNotification(
+            { ...course, paymentId: response.razorpay_payment_id },
+            user
+          );
+
+          toast.success(`Successfully enrolled in ${course.title}`);
+          setIsProcessingPayment(false);
+        },
+        prefill: {
+          name: user?.fullName || "",
+          email: user?.primaryEmailAddress?.emailAddress || "",
+        },
+        theme: {
+          color: "#6366f1",
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessingPayment(false);
+            toast.error("Payment cancelled");
+          },
+        },
+      };
+
+      const razorpay = new razorpayInstance(options);
+      razorpay.open();
+    } catch (error) {
+      console.error("Razorpay error:", error);
+      toast.error("Payment failed. Please try again.");
+      setIsProcessingPayment(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <SectionHeading>Buy Courses</SectionHeading>
+
+      <div className="glass-card rounded-xl p-6 mb-6">
+        <div className="bg-amber-50 text-amber-800 p-4 rounded-lg mb-6 border border-amber-200">
+          <h3 className="font-medium mb-2 flex items-center">
+            <ShoppingCart size={18} className="mr-2" />
+            Payment Information
+          </h3>
+          <p className="text-sm">
+            All payments are processed securely via Razorpay. After purchase,
+            your course will be instantly available in "My Courses".
+          </p>
+          <p className="mt-2 text-sm">
+            If you face any issues with payment, please contact us at
+            support@frontendguru.academy
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {availableCourses.map((course) => (
+          <Card key={course.id} className="overflow-hidden">
+            <CardContent className="p-6">
+              <div className="w-12 h-12 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center mb-4">
+                <Book size={20} />
+              </div>
+              <h3 className="text-lg font-medium mb-2">{course.title}</h3>
+              <p className="text-muted-foreground text-sm mb-3">
+                {course.description}
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {course.topics.map((topic, index) => (
+                  <span
+                    key={index}
+                    className="inline-block text-xs font-medium bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-100"
+                  >
+                    {topic}
+                  </span>
+                ))}
+              </div>
+              <div className="flex justify-between items-center text-sm text-muted-foreground mb-1">
+                <span>Duration: {course.duration}</span>
+                <span className="text-lg font-semibold text-primary">
+                  ₹{course.price / 100}
+                </span>
+              </div>
+            </CardContent>
+            <CardFooter className="bg-muted/20 px-6 py-3">
+              <button
+                onClick={() => handlePayment(course)}
+                disabled={
+                  isProcessingPayment ||
+                  enrolledCourses.some(
+                    (c) => c.id === course.id && c.userId === user?.id
+                  )
+                }
+                className={`w-full flex items-center justify-center gap-2 py-2 rounded-md ${
+                  enrolledCourses.some(
+                    (c) => c.id === course.id && c.userId === user?.id
+                  )
+                    ? "bg-green-500 text-white cursor-default"
+                    : "bg-primary text-white hover:bg-primary/90"
+                } transition-colors`}
+              >
+                {enrolledCourses.some(
+                  (c) => c.id === course.id && c.userId === user?.id
+                )
+                  ? "Enrolled"
+                  : isProcessingPayment
+                  ? "Processing..."
+                  : "Buy Now"}
+              </button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default BuyCourses;

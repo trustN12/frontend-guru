@@ -12,10 +12,10 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
-import Home from "./pages/Home";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Blog from "./pages/Blog";
+import Index from "./pages/Index";
 
 
 const PUBLISHABLE_KEY = "pk_test_ZXF1YWwtdW5pY29ybi0xLmNsZXJrLmFjY291bnRzLmRldiQ";
@@ -45,7 +45,7 @@ const App = () => (
               <Route path="terms" element={<Terms />} />
 
             <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />  {/* Default Home Page */}
+              <Route index element={<Index />} />  {/* Default Home Page */}
               <Route path="sign-in" element={<SignIn />} />
               <Route path="sign-up" element={<SignUp />} />
               <Route path="blog" element={<Blog />} />
