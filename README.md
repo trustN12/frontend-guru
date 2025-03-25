@@ -11,4 +11,5 @@
 - clerk/clerk-react@5.24.1
 - tanstack/react-query@5.56.2
 - MagicUI
+- razorpay@2.9.6
 
