@@ -115,7 +115,7 @@ const Dashboard = () => {
       currency: "INR",
       name: "Frontend Guru Academy",
       description: `Enrollment for ${course.title}`,
-      image: "/lovable-uploads/2577d6ef-9fda-427a-a24a-249f078bf108.png",
+      image: "/programmer.png",
       handler: function(response) {
         // Payment successful
         // Add course to enrolled courses with initial progress
