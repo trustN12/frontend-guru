@@ -3,6 +3,7 @@ import { Book, ShoppingCart, Video } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner"; 
 import { sendPurchaseNotification } from "../../utils/emailjs";
+import { useState } from "react";
 
 const BuyCourses = ({
   user,
@@ -13,20 +14,26 @@ const BuyCourses = ({
   availableCourses,
   loadRazorpay,
 }) => {
+  // State to track processing for each course
+  const [processingCourses, setProcessingCourses] = useState({});
+
   const handlePayment = async (course) => {
     if (!user) {
       toast.error("Please sign in to purchase courses");
       return;
     }
 
-    setIsProcessingPayment(true);
+    // Set processing state for the specific course
+    setProcessingCourses((prev) => ({ ...prev, [course.id]: true }));
+    setIsProcessingPayment(true); // Set overall processing state
 
     // Check if course is already enrolled by this user
     if (
       enrolledCourses.some((c) => c.id === course.id && c.userId === user.id)
     ) {
       toast.error(`You're already enrolled in ${course.title}`);
-      setIsProcessingPayment(false);
+      setProcessingCourses((prev) => ({ ...prev, [course.id]: false }));
+      setIsProcessingPayment(false); // Reset overall processing state
       return;
     }
 
@@ -35,20 +42,20 @@ const BuyCourses = ({
       const razorpayInstance = await loadRazorpay();
       if (!razorpayInstance) {
         toast.error("Failed to load payment gateway. Please try again later.");
-        setIsProcessingPayment(false);
+        setProcessingCourses((prev) => ({ ...prev, [course.id]: false }));
+        setIsProcessingPayment(false); // Reset overall processing state
         return;
       }
 
       const options = {
-        key: "rzp_test_7FEQanUQWAA66x", // Test key
-        amount: course.price,
+        key: "rzp_test_7FEQanUQWAA66x", 
+        amount: course.price, // Amount in paise
         currency: "INR",
         name: "Frontend Guru Academy",
         description: `Enrollment for ${course.title}`,
         image: "/programmer.png",
         handler: function (response) {
           // Payment successful
-          // Add course to enrolled courses with initial progress and video access
           const newCourse = {
             ...course,
             enrolledDate: new Date().toISOString(),
@@ -58,6 +65,7 @@ const BuyCourses = ({
             paymentId: response.razorpay_payment_id,
             userId: user.id,
             videosUnlocked: true,
+            watchedVideos: [],
           };
 
           // Update state and local storage
@@ -77,7 +85,8 @@ const BuyCourses = ({
           toast.success(
             `Successfully enrolled in ${course.title}. Course videos are now available in your schedule.`
           );
-          setIsProcessingPayment(false);
+          setProcessingCourses((prev) => ({ ...prev, [course.id]: false }));
+          setIsProcessingPayment(false); // Reset overall processing state
         },
         prefill: {
           name: user?.fullName || "",
@@ -88,7 +97,8 @@ const BuyCourses = ({
         },
         modal: {
           ondismiss: function () {
-            setIsProcessingPayment(false);
+            setProcessingCourses((prev) => ({ ...prev, [course.id]: false }));
+            setIsProcessingPayment(false); // Reset overall processing state
             toast.error("Payment cancelled");
           },
         },
@@ -99,7 +109,8 @@ const BuyCourses = ({
     } catch (error) {
       console.error("Razorpay error:", error);
       toast.error("Payment failed. Please try again.");
-      setIsProcessingPayment(false);
+      setProcessingCourses((prev) => ({ ...prev, [course.id]: false }));
+      setIsProcessingPayment(false); // Reset overall processing state
     }
   };
 
@@ -161,7 +172,7 @@ const BuyCourses = ({
               <button
                 onClick={() => handlePayment(course)}
                 disabled={
-                  isProcessingPayment ||
+                  processingCourses[course.id] || // Check if this course is processing
                   enrolledCourses.some(
                     (c) => c.id === course.id && c.userId === user?.id
                   )
@@ -178,7 +189,7 @@ const BuyCourses = ({
                   (c) => c.id === course.id && c.userId === user?.id
                 )
                   ? "Enrolled"
-                  : isProcessingPayment
+                  : processingCourses[course.id] // Show processing state for this course
                   ? "Processing..."
                   : "Buy Now"}
               </button>

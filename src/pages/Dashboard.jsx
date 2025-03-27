@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useUser } from "@clerk/clerk-react";
+import { useUser  } from "@clerk/clerk-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner"; 
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
@@ -10,7 +10,7 @@ import Schedule from "../components/dashboard/Schedule";
 import BuyCourses from "../components/dashboard/BuyCourses";
 
 const Dashboard = () => {
-  const { user } = useUser();
+  const { user } = useUser ();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
@@ -21,7 +21,12 @@ const Dashboard = () => {
     if (savedCourses) {
       try {
         const parsedCourses = JSON.parse(savedCourses);
-        setEnrolledCourses(parsedCourses);
+        // Ensure each course has watchedVideos initialized
+        const updatedCourses = parsedCourses.map(course => ({
+          ...course,
+          watchedVideos: course.watchedVideos || [] // Initialize if undefined
+        }));
+        setEnrolledCourses(updatedCourses);
       } catch (error) {
         console.error("Error parsing saved courses:", error);
         setEnrolledCourses([]);
@@ -54,63 +59,73 @@ const Dashboard = () => {
   };
 
   // Function to update course progress
-  const updateCourseProgress = (courseId, progressIncrement) => {
+  const markVideoAsWatched = (courseId, videoId) => {
     const updatedCourses = enrolledCourses.map((course) => {
       if (course.id === courseId && course.userId === user.id) {
-        const newProgress = Math.min(100, course.progress + progressIncrement);
-        const newCompletedLessons = Math.ceil(
-          (newProgress / 100) * course.totalLessons
-        );
+        // Ensure watchedVideos is initialized
+        const watchedVideos = course.watchedVideos || [];
+        
+        if (!watchedVideos.includes(videoId)) {
+          const newWatchedVideos = [...watchedVideos, videoId];
+          const newProgress = Math.round((newWatchedVideos.length / course.totalLessons) * 100);
+          const newCompletedLessons = newWatchedVideos.length;
 
-        return {
-          ...course,
-          progress: newProgress,
-          completedLessons: newCompletedLessons,
-        };
+          return {
+            ...course,
+            watchedVideos: newWatchedVideos,
+            progress: newProgress,
+            completedLessons: newCompletedLessons,
+          };
+        }
       }
       return course;
     });
 
     setEnrolledCourses(updatedCourses);
-    // Update localStorage
     localStorage.setItem("enrolledCourses", JSON.stringify(updatedCourses));
-    toast.success("Progress updated successfully");
+    toast.success("Video marked as watched");
   };
 
   // Available courses data with videos
   const availableCourses = [
     {
       id: 1,
-      title: "JavaScript Fundamentals",
+      title: "JavaScript Intermediate",
       description:
         "Build a strong foundation in JavaScript with a focus on modern ES6+ features.",
-      price: 299900, // In paise (₹2999)
-      duration: "8 weeks",
-      topics: ["ES6+", "Promises", "Closures", "Functional JS"],
+      price: 29900, // In paise (₹2999)
+      duration: "2 weeks",
+      topics: ["async/await", "Promises", "Destructuring", "Pollyfills", "methods"],
       videos: [
         {
           id: 1,
-          title: "Introduction to JavaScript",
-          duration: "15:20",
-          url: "https://www.youtube.com/embed/PkZNo7MFNFg",
+          title: "Promises & async/await",
+          duration: "19:50",
+          url: "https://youtube.com/embed/syZLtkJjnQk",
         },
         {
           id: 2,
-          title: "Variables and Data Types",
-          duration: "22:45",
-          url: "https://www.youtube.com/embed/DHjqpvDnNGE",
+          title: "Spread Operator",
+          duration: "08:39",
+          url: "https://youtube.com/embed/LgVmKfkgyUU",
         },
         {
           id: 3,
-          title: "Functions and Scope",
-          duration: "18:30",
-          url: "https://www.youtube.com/embed/xUI5Tsl2JpY",
+          title: "call,apply & bind methods",
+          duration: "09:56",
+          url: "https://youtube.com/embed/k1Eo4D9xSDo",
         },
         {
           id: 4,
-          title: "Objects and Arrays",
-          duration: "20:15",
-          url: "https://www.youtube.com/embed/W6NZfCO5SIk",
+          title: "Destructuring",
+          duration: "10:51",
+          url: "https://youtube.com/embed/8OGNCN1pIw8",
+        },
+        {
+          id: 5,
+          title: "Pollyfills",
+          duration: "11:44",
+          url: "https://youtube.com/embed/u5ipjx_q9cs",
         },
       ],
     },
@@ -119,7 +134,7 @@ const Dashboard = () => {
       title: "React Fundamentals",
       description:
         "Learn React from the ground up, including components, props, state, and JSX.",
-      price: 399900, // In paise (₹3999)
+      price: 39900, // In paise (₹3999)
       duration: "10 weeks",
       topics: ["Components", "Props & State", "Hooks", "JSX"],
       videos: [
@@ -154,7 +169,7 @@ const Dashboard = () => {
       title: "Modern CSS & Tailwind",
       description:
         "Build responsive, beautiful UIs with modern CSS techniques and Tailwind CSS.",
-      price: 249900, // In paise (₹2499)
+      price: 24900, // In paise (₹2499)
       duration: "6 weeks",
       topics: ["Flexbox & Grid", "Responsive Design", "Animations", "Tailwind"],
       videos: [
@@ -212,7 +227,7 @@ const Dashboard = () => {
               <MyCourses
                 user={user}
                 enrolledCourses={enrolledCourses}
-                updateCourseProgress={updateCourseProgress}
+                updateCourseProgress={markVideoAsWatched}
                 setActiveTab={setActiveTab}
               />
             )}
@@ -230,6 +245,8 @@ const Dashboard = () => {
                 user={user}
                 enrolledCourses={enrolledCourses}
                 availableCourses={availableCourses}
+                setActiveTab={setActiveTab}
+                markVideoAsWatched={markVideoAsWatched}
               />
             )}
 

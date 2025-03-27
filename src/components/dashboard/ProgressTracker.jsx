@@ -8,7 +8,7 @@ const ProgressTracker = ({ user, enrolledCourses, setActiveTab }) => {
     (course) => course.userId === user?.id
   );
 
-  // Calculate overall progress
+  // Calculate overall progress based on watched videos
   const overallProgress =
     userCourses.length > 0
       ? Math.round(

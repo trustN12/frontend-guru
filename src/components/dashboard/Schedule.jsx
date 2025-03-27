@@ -3,10 +3,12 @@ import SectionHeading from "../main/SectionHeading";
 import { Clock, Play, Lock } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
-const Schedule = ({ user, enrolledCourses, availableCourses }) => {
+const Schedule = ({ user, enrolledCourses, availableCourses, setActiveTab, markVideoAsWatched }) => {
   const [activeVideo, setActiveVideo] = useState(null);
 
-  const handlePlayVideo = (video) => {
+  const handlePlayVideo = (video, courseId) => {
+    // Call markVideoAsWatched when a video is played
+    markVideoAsWatched(courseId, video.id);
     setActiveVideo(video);
   };
 
@@ -81,7 +83,7 @@ const Schedule = ({ user, enrolledCourses, availableCourses }) => {
                           </div>
                         </div>
                         <button
-                          onClick={() => handlePlayVideo(video)}
+                          onClick={() => handlePlayVideo(video, course.id)} // Pass course.id to the function
                           className="px-3 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
                         >
                           Watch
@@ -92,11 +94,7 @@ const Schedule = ({ user, enrolledCourses, availableCourses }) => {
                 </CardContent>
                 <CardFooter className="bg-muted/20 px-6 py-3">
                   <span className="text-sm text-muted-foreground">
-                    Content available until:{" "}
-                    {new Date(
-                      new Date(course.enrolledDate).getTime() +
-                        90 * 24 * 60 * 60 * 1000
-                    ).toLocaleDateString()}
+                    Content available : lifetime access
                   </span>
                 </CardFooter>
               </Card>
@@ -181,9 +179,7 @@ const Schedule = ({ user, enrolledCourses, availableCourses }) => {
                   </CardContent>
                   <CardFooter className="bg-muted/20 px-6 py-3">
                     <button
-                      onClick={() =>
-                        (window.location.href = "#/dashboard?tab=buy-courses")
-                      }
+                      onClick={() => setActiveTab("buy-courses")}
                       className="w-full py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
                     >
                       Enroll to Unlock (₹{course.price / 100})
