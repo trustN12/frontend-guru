@@ -2,31 +2,35 @@
 import SectionHeading from "../main/SectionHeading";
 import { Book, ShoppingCart, Video } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { toast } from "sonner"; 
+import { toast } from "sonner";
+import { useState } from "react";
 
 const BuyCourses = ({
   user,
   enrolledCourses,
   setEnrolledCourses,
-  isProcessingPayment,
   setIsProcessingPayment,
   availableCourses,
   loadRazorpay,
 }) => {
+  const [processingCourseId, setProcessingCourseId] = useState(null); // Track the currently processing course
+
   const handlePayment = async (course) => {
     if (!user) {
       toast.error("Please sign in to purchase courses");
       return;
     }
 
-    setIsProcessingPayment(true);
+    setProcessingCourseId(course.id); // Set the currently processing course ID
+    setIsProcessingPayment(true); // Set processing state
 
     // Check if course is already enrolled by this user
     if (
       enrolledCourses.some((c) => c.id === course.id && c.userId === user.id)
     ) {
       toast.error(`You're already enrolled in ${course.title}`);
-      setIsProcessingPayment(false);
+      setProcessingCourseId(null); // Reset processing course ID
+      setIsProcessingPayment(false); // Reset processing state
       return;
     }
 
@@ -35,12 +39,13 @@ const BuyCourses = ({
       const razorpayInstance = await loadRazorpay();
       if (!razorpayInstance) {
         toast.error("Failed to load payment gateway. Please try again later.");
-        setIsProcessingPayment(false);
+        setProcessingCourseId(null); // Reset processing course ID
+        setIsProcessingPayment(false); // Reset processing state
         return;
       }
 
       const options = {
-        key: "rzp_test_7FEQanUQWAA66x", // Test key
+        key: "rzp_live_jjiWIKcc9YyuYg", // Test key - rzp_test_7FEQanUQWAA66x"
         amount: course.discountedPrice, // Use discounted price
         currency: "INR",
         name: "Frontend Guru Academy",
@@ -70,7 +75,8 @@ const BuyCourses = ({
           toast.success(
             `Successfully enrolled in ${course.title}. Course videos are now available in your schedule.`
           );
-          setIsProcessingPayment(false);
+          setProcessingCourseId(null); // Reset processing course ID
+          setIsProcessingPayment(false); // Reset processing state
         },
         prefill: {
           name: user?.fullName || "",
@@ -81,7 +87,8 @@ const BuyCourses = ({
         },
         modal: {
           ondismiss: function () {
-            setIsProcessingPayment(false);
+            setProcessingCourseId(null); // Reset processing course ID
+            setIsProcessingPayment(false); // Reset processing state
             toast.error("Payment cancelled");
           },
         },
@@ -92,7 +99,8 @@ const BuyCourses = ({
     } catch (error) {
       console.error("Razorpay error:", error);
       toast.error("Payment failed. Please try again.");
-      setIsProcessingPayment(false);
+      setProcessingCourseId(null); // Reset processing course ID
+      setIsProcessingPayment(false); // Reset processing state
     }
   };
 
@@ -113,7 +121,14 @@ const BuyCourses = ({
           </p>
           <p className="mt-2 text-sm">
             If you face any issues with payment, please contact me at{" "}
-            <span><a href="mailto:academyshreyn12@gmail.com" className="font-semibold cursor-pointer hover:underline">academyshreyn12@gmail.com</a></span>
+            <span>
+              <a
+                href="mailto:academyshreyn12@gmail.com"
+                className="font-semibold cursor-pointer hover:underline"
+              >
+                academyshreyn12@gmail.com
+              </a>
+            </span>
           </p>
         </div>
       </div>
@@ -146,7 +161,10 @@ const BuyCourses = ({
               <div className="flex justify-between items-center text-sm text-muted-foreground mb-1">
                 <span>Duration: {course.duration}</span>
                 <span className="text-3xl font-semibold text-primary">
-                  ₹{course.discountedPrice / 100} <span className="line-through text-lg font-medium text-gray-500">₹{course.price / 100}</span>
+                  ₹{course.discountedPrice / 100}{" "}
+                  <span className="line-through text-lg font-medium text-gray-500">
+                    ₹{course.price / 100}
+                  </span>
                 </span>
               </div>
             </CardContent>
@@ -154,7 +172,7 @@ const BuyCourses = ({
               <button
                 onClick={() => handlePayment(course)}
                 disabled={
-                  isProcessingPayment ||
+                  processingCourseId === course.id || // Disable if this course is being processed
                   enrolledCourses.some(
                     (c) => c.id === course.id && c.userId === user?.id
                   )
@@ -171,7 +189,7 @@ const BuyCourses = ({
                   (c) => c.id === course.id && c.userId === user?.id
                 )
                   ? "Enrolled"
-                  : isProcessingPayment
+                  : processingCourseId === course.id
                   ? "Processing..."
                   : "Buy Now"}
               </button>
