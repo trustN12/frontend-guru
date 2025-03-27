@@ -1,9 +1,8 @@
+// BuyCourses.jsx
 import SectionHeading from "../main/SectionHeading";
 import { Book, ShoppingCart, Video } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner"; 
-import { sendPurchaseNotification } from "../../utils/emailjs";
-import { useState } from "react";
 
 const BuyCourses = ({
   user,
@@ -14,26 +13,20 @@ const BuyCourses = ({
   availableCourses,
   loadRazorpay,
 }) => {
-  // State to track processing for each course
-  const [processingCourses, setProcessingCourses] = useState({});
-
   const handlePayment = async (course) => {
     if (!user) {
       toast.error("Please sign in to purchase courses");
       return;
     }
 
-    // Set processing state for the specific course
-    setProcessingCourses((prev) => ({ ...prev, [course.id]: true }));
-    setIsProcessingPayment(true); // Set overall processing state
+    setIsProcessingPayment(true);
 
     // Check if course is already enrolled by this user
     if (
       enrolledCourses.some((c) => c.id === course.id && c.userId === user.id)
     ) {
       toast.error(`You're already enrolled in ${course.title}`);
-      setProcessingCourses((prev) => ({ ...prev, [course.id]: false }));
-      setIsProcessingPayment(false); // Reset overall processing state
+      setIsProcessingPayment(false);
       return;
     }
 
@@ -42,14 +35,13 @@ const BuyCourses = ({
       const razorpayInstance = await loadRazorpay();
       if (!razorpayInstance) {
         toast.error("Failed to load payment gateway. Please try again later.");
-        setProcessingCourses((prev) => ({ ...prev, [course.id]: false }));
-        setIsProcessingPayment(false); // Reset overall processing state
+        setIsProcessingPayment(false);
         return;
       }
 
       const options = {
-        key: "rzp_live_jjiWIKcc9YyuYg", //test_key: rzp_test_7FEQanUQWAA66x
-        amount: course.price, // Amount in paise
+        key: "rzp_test_7FEQanUQWAA66x", // Test key
+        amount: course.discountedPrice, // Use discounted price
         currency: "INR",
         name: "Frontend Guru Academy",
         description: `Enrollment for ${course.title}`,
@@ -65,7 +57,6 @@ const BuyCourses = ({
             paymentId: response.razorpay_payment_id,
             userId: user.id,
             videosUnlocked: true,
-            watchedVideos: [],
           };
 
           // Update state and local storage
@@ -76,17 +67,10 @@ const BuyCourses = ({
             JSON.stringify(updatedCourses)
           );
 
-          // Send email notification
-          sendPurchaseNotification(
-            { ...course, paymentId: response.razorpay_payment_id },
-            user
-          );
-
           toast.success(
             `Successfully enrolled in ${course.title}. Course videos are now available in your schedule.`
           );
-          setProcessingCourses((prev) => ({ ...prev, [course.id]: false }));
-          setIsProcessingPayment(false); // Reset overall processing state
+          setIsProcessingPayment(false);
         },
         prefill: {
           name: user?.fullName || "",
@@ -97,8 +81,7 @@ const BuyCourses = ({
         },
         modal: {
           ondismiss: function () {
-            setProcessingCourses((prev) => ({ ...prev, [course.id]: false }));
-            setIsProcessingPayment(false); // Reset overall processing state
+            setIsProcessingPayment(false);
             toast.error("Payment cancelled");
           },
         },
@@ -109,8 +92,7 @@ const BuyCourses = ({
     } catch (error) {
       console.error("Razorpay error:", error);
       toast.error("Payment failed. Please try again.");
-      setProcessingCourses((prev) => ({ ...prev, [course.id]: false }));
-      setIsProcessingPayment(false); // Reset overall processing state
+      setIsProcessingPayment(false);
     }
   };
 
@@ -130,8 +112,8 @@ const BuyCourses = ({
             videos will be unlocked in "My Schedule".
           </p>
           <p className="mt-2 text-sm">
-            If you face any issues with payment, please contact us at
-            support@frontendguru.academy
+            If you face any issues with payment, please contact me at{" "}
+            <span><a href="mailto:academyshreyn12@gmail.com" className="font-semibold cursor-pointer hover:underline">academyshreyn12@gmail.com</a></span>
           </p>
         </div>
       </div>
@@ -163,8 +145,8 @@ const BuyCourses = ({
               </div>
               <div className="flex justify-between items-center text-sm text-muted-foreground mb-1">
                 <span>Duration: {course.duration}</span>
-                <span className="text-lg font-semibold text-primary">
-                  ₹{course.price / 100}
+                <span className="text-3xl font-semibold text-primary">
+                  ₹{course.discountedPrice / 100} <span className="line-through text-lg font-medium text-gray-500">₹{course.price / 100}</span>
                 </span>
               </div>
             </CardContent>
@@ -172,7 +154,7 @@ const BuyCourses = ({
               <button
                 onClick={() => handlePayment(course)}
                 disabled={
-                  processingCourses[course.id] || // Check if this course is processing
+                  isProcessingPayment ||
                   enrolledCourses.some(
                     (c) => c.id === course.id && c.userId === user?.id
                   )
@@ -189,7 +171,7 @@ const BuyCourses = ({
                   (c) => c.id === course.id && c.userId === user?.id
                 )
                   ? "Enrolled"
-                  : processingCourses[course.id] // Show processing state for this course
+                  : isProcessingPayment
                   ? "Processing..."
                   : "Buy Now"}
               </button>

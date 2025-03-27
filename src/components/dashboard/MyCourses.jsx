@@ -1,3 +1,4 @@
+// MyCourses.jsx
 import SectionHeading from "../main/SectionHeading";
 import { Book } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -9,7 +10,6 @@ const MyCourses = ({
   updateCourseProgress,
   setActiveTab,
 }) => {
-  // Filter courses for the current user
   const userCourses = enrolledCourses.filter(
     (course) => course.userId === user?.id
   );

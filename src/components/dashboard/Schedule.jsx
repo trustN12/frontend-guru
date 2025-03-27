@@ -1,3 +1,4 @@
+// Schedule.jsx
 import { useState } from "react";
 import SectionHeading from "../main/SectionHeading";
 import { Clock, Play, Lock } from "lucide-react";
@@ -7,7 +8,6 @@ const Schedule = ({ user, enrolledCourses, availableCourses, setActiveTab, markV
   const [activeVideo, setActiveVideo] = useState(null);
 
   const handlePlayVideo = (video, courseId) => {
-    // Call markVideoAsWatched when a video is played
     markVideoAsWatched(courseId, video.id);
     setActiveVideo(video);
   };
@@ -16,7 +16,6 @@ const Schedule = ({ user, enrolledCourses, availableCourses, setActiveTab, markV
     setActiveVideo(null);
   };
 
-  // Helper function to get course videos
   const getCourseVideos = (courseId) => {
     const course = availableCourses.find((c) => c.id === courseId);
     return course?.videos || [];
@@ -44,7 +43,7 @@ const Schedule = ({ user, enrolledCourses, availableCourses, setActiveTab, markV
                   <iframe
                     width="100%"
                     height="100%"
-                    src={activeVideo.url}
+                    src={activeVideo.url} // Use the embed URL
                     title={activeVideo.title}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -83,7 +82,7 @@ const Schedule = ({ user, enrolledCourses, availableCourses, setActiveTab, markV
                           </div>
                         </div>
                         <button
-                          onClick={() => handlePlayVideo(video, course.id)} // Pass course.id to the function
+                          onClick={() => handlePlayVideo(video, course.id)} // Pass courseId
                           className="px-3 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
                         >
                           Watch
@@ -94,7 +93,7 @@ const Schedule = ({ user, enrolledCourses, availableCourses, setActiveTab, markV
                 </CardContent>
                 <CardFooter className="bg-muted/20 px-6 py-3">
                   <span className="text-sm text-muted-foreground">
-                    Content available : lifetime access
+                    Content available: lifetime access
                   </span>
                 </CardFooter>
               </Card>
@@ -110,9 +109,7 @@ const Schedule = ({ user, enrolledCourses, availableCourses, setActiveTab, markV
               unlock video content.
             </p>
             <button
-              onClick={() =>
-                (window.location.href = "#/dashboard?tab=buy-courses")
-              }
+              onClick={() => setActiveTab("buy-courses")}
               className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50"
             >
               Browse Courses
@@ -165,10 +162,7 @@ const Schedule = ({ user, enrolledCourses, availableCourses, setActiveTab, markV
                             </div>
                           </div>
                           <button
-                            onClick={() =>
-                              (window.location.href =
-                                "#/dashboard?tab=buy-courses")
-                            }
+                            onClick={() => setActiveTab("buy-courses")}
                             className="px-3 py-1 text-xs bg-muted-foreground/20 text-muted-foreground rounded-md hover:bg-muted-foreground/30 transition-colors"
                           >
                             Unlock
@@ -182,7 +176,7 @@ const Schedule = ({ user, enrolledCourses, availableCourses, setActiveTab, markV
                       onClick={() => setActiveTab("buy-courses")}
                       className="w-full py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
                     >
-                      Enroll to Unlock (₹{course.price / 100})
+                      Enroll to Unlock (₹{course.discountedPrice / 100})
                     </button>
                   </CardFooter>
                 </Card>

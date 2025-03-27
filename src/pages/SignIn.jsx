@@ -19,7 +19,7 @@ const SignIn = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-6"
         >
-          <h1 className="text-3xl font-bold text-amber-800">Sign In</h1>
+          <h1 className="text-3xl font-bold text-amber-800">Log In</h1>
           <p className="text-amber-700 mt-1 text-sm font-medium">Welcome to Frontend Guru Academy</p>
         </motion.div>
 
