@@ -93,7 +93,7 @@ const Dashboard = () => {
       title: "JavaScript Intermediate",
       description:
         "Build a strong foundation in JavaScript with a focus on modern ES6+ features.",
-      price: 29900, // In paise (₹2999)
+      price: 1000, // In paise (₹2999)
       duration: "2 weeks",
       topics: ["async/await", "Promises", "Destructuring", "Pollyfills", "methods"],
       videos: [

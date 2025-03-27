@@ -48,7 +48,7 @@ const BuyCourses = ({
       }
 
       const options = {
-        key: "rzp_test_7FEQanUQWAA66x", 
+        key: "rzp_live_jjiWIKcc9YyuYg", //test_key: rzp_test_7FEQanUQWAA66x
         amount: course.price, // Amount in paise
         currency: "INR",
         name: "Frontend Guru Academy",
