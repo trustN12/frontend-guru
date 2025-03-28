@@ -3,11 +3,14 @@ import { motion } from 'framer-motion';
 import { Code, Layout, Lightbulb, CheckCircle, Zap, BookOpen } from 'lucide-react';
 import SectionHeading from '../components/main/SectionHeading';
 import CourseCard from '../components/main/CourseCard';
+import ElevenLabsConversationalChat from '@/components/AI-AGENT/AIChat';
 
 const Courses = () => {
   return (
     <section className="pt-24 pb-16 md:pt-32 md:pb-24">
       <div className="container mx-auto px-4 md:px-6">
+
+        <ElevenLabsConversationalChat />
         <SectionHeading subtext="Course Catalog" centered>
           Comprehensive Frontend Engineering Courses
         </SectionHeading>

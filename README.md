@@ -12,4 +12,5 @@
 - tanstack/react-query@5.56.2
 - MagicUI
 - razorpay@2.9.6
+- @11labs/react@0.1.0
 

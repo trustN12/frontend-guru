@@ -14,9 +14,19 @@ import CourseCard from "../components/main/CourseCard";
 import Testimonials from "@/components/main/Testimonials";
 import { MagicCard } from "@/components/magicui/magic-card";
 import { useTheme } from "next-themes";
+import { useEffect } from "react";
+import ElevenLabsConversationalChat from "@/components/AI-AGENT/AIChat";
 
 const Home = () => {
   const { theme } = useTheme();
+
+  useEffect(() => {
+    // Load the ElevenLabs widget script dynamically
+    const script = document.createElement("script");
+    script.src = "https://elevenlabs.io/convai-widget/index.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
 
   const item = {
     hidden: { opacity: 0, y: 20 },
@@ -35,6 +45,12 @@ const Home = () => {
               transition={{ duration: 0.5 }}
               className="space-y-6"
             >
+              {/* ElevenLabs AI Chat Widget */}
+
+              <div className="div">
+                <ElevenLabsConversationalChat />
+              </div>
+
               <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full">
                 Master Frontend Engineering
               </span>
@@ -136,127 +152,147 @@ export const FeatureCard = ({ icon, title, desc }) => {
           <SectionHeading subtext="Why Choose My Courses" centered>
             Expert-Led Frontend Development Training
           </SectionHeading>
-          
-          
+
           <div className="mt-12  md:mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          <MagicCard className="rounded-xl" gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}>
-            <motion.div
-              variants={item}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
+            <MagicCard
+              className="rounded-xl"
+              gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}
             >
-              <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
-                <Lightbulb size={20} />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Exclusive Content</h3>
-              <p className="text-muted-foreground text-sm">
-                Access unique insights and techniques not available on YouTube
-                or other platforms.
-              </p>
-            </motion.div>
-           </MagicCard>
-
-           <MagicCard className="rounded-xl" gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}>
-            <motion.div
-              variants={item}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
-            >
-              <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
-                <Code size={20} />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Practical Approach</h3>
-              <p className="text-muted-foreground text-sm">
-                Build real-world projects that demonstrate modern frontend
-                engineering practices.
-              </p>
-            </motion.div>
+              <motion.div
+                variants={item}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
+              >
+                <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                  <Lightbulb size={20} />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">
+                  Exclusive Content
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  Access unique insights and techniques not available on YouTube
+                  or other platforms.
+                </p>
+              </motion.div>
             </MagicCard>
 
-            <MagicCard className="rounded-xl" gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}>
-            <motion.div
-              variants={item}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
+            <MagicCard
+              className="rounded-xl"
+              gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}
             >
-              <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
-                <Zap size={20} />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Stay Current</h3>
-              <p className="text-muted-foreground text-sm">
-                Learn the latest frameworks and libraries like React, Tailwind
-                CSS, and modern UI libraries.
-              </p>
-            </motion.div>
-            </MagicCard>
-          
-            <MagicCard className="rounded-xl" gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}>
-            <motion.div
-              variants={item}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
-            >
-              <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
-                <Layout size={20} />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">
-                Interview Preparation
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Get comprehensive training for technical interviews, with real
-                questions and expert feedback.
-              </p>
-            </motion.div>
+              <motion.div
+                variants={item}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
+              >
+                <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                  <Code size={20} />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">
+                  Practical Approach
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  Build real-world projects that demonstrate modern frontend
+                  engineering practices.
+                </p>
+              </motion.div>
             </MagicCard>
 
-            <MagicCard className="rounded-xl" gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}>
-            <motion.div
-              variants={item}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
+            <MagicCard
+              className="rounded-xl"
+              gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}
             >
-              <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
-                <BookOpen size={20} />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">System Design</h3>
-              <p className="text-muted-foreground text-sm">
-                Master frontend system design principles essential for senior
-                engineering roles.
-              </p>
-            </motion.div>
-            </MagicCard>
-           
-            <MagicCard className="rounded-xl" gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}>
-            <motion.div
-              variants={item}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
-            >
-              <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
-                <CheckCircle size={20} />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">
-                Personalized Mentoring
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Receive one-on-one guidance tailored to your specific learning
-                needs and career goals.
-              </p>
-            </motion.div>
+              <motion.div
+                variants={item}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
+              >
+                <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                  <Zap size={20} />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Stay Current</h3>
+                <p className="text-muted-foreground text-sm">
+                  Learn the latest frameworks and libraries like React, Tailwind
+                  CSS, and modern UI libraries.
+                </p>
+              </motion.div>
             </MagicCard>
 
+            <MagicCard
+              className="rounded-xl"
+              gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}
+            >
+              <motion.div
+                variants={item}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
+              >
+                <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                  <Layout size={20} />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">
+                  Interview Preparation
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  Get comprehensive training for technical interviews, with real
+                  questions and expert feedback.
+                </p>
+              </motion.div>
+            </MagicCard>
+
+            <MagicCard
+              className="rounded-xl"
+              gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}
+            >
+              <motion.div
+                variants={item}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
+              >
+                <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                  <BookOpen size={20} />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">System Design</h3>
+                <p className="text-muted-foreground text-sm">
+                  Master frontend system design principles essential for senior
+                  engineering roles.
+                </p>
+              </motion.div>
+            </MagicCard>
+
+            <MagicCard
+              className="rounded-xl"
+              gradientColor={theme === "dark" ? "#FFA50555" : "#FEF3C7D9"}
+            >
+              <motion.div
+                variants={item}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                className="glass-card p-6 rounded-xl bg-[#FCE3C7] bg-opacity-10"
+              >
+                <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-4">
+                  <CheckCircle size={20} />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">
+                  Personalized Mentoring
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  Receive one-on-one guidance tailored to your specific learning
+                  needs and career goals.
+                </p>
+              </motion.div>
+            </MagicCard>
           </div>
         </div>
       </section>
