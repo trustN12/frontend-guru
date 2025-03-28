@@ -10,6 +10,7 @@ import ProgressTracker from "../components/dashboard/ProgressTracker";
 import Schedule from "../components/dashboard/Schedule";
 import BuyCourses from "../components/dashboard/BuyCourses";
 
+
 const Dashboard = () => {
   const { user } = useUser ();
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -215,6 +216,8 @@ const Dashboard = () => {
     <section className="pt-24 pb-16 md:pt-32 md:pb-24">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex flex-col md:flex-row gap-8">
+
+          
           {/* Sidebar */}
           <DashboardSidebar
             activeTab={activeTab}

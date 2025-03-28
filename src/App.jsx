@@ -19,6 +19,9 @@ import Index from "./pages/Index";
 import BlogPost1 from "./pages/blog-pages/Blog-Post1";
 import BlogPost2 from "./pages/blog-pages/Blog-Post2";
 import BlogPost3 from "./pages/blog-pages/Blog-Post3";
+import BlogPost6 from "./pages/blog-pages/Blog-Post6";
+import BlogPost4 from "./pages/blog-pages/Blog-Post4";
+import BlogPost5 from "./pages/blog-pages/Blog-Post5";
 
 
 
@@ -56,7 +59,9 @@ const App = () => (
               <Route path="/blog/mastering-react-hooks" element={<BlogPost1 />} />
               <Route path="/blog/system-design-frontend" element={<BlogPost2 />} />
               <Route path="/blog/modern-css-techniques" element={<BlogPost3 />} />
-              
+              <Route path="/blog/ai-agents-productivity" element={<BlogPost6 />} />
+              <Route path="/blog/optimizing-react-performance" element={<BlogPost4 />} />
+              <Route path="/blog/frontend-interview-preparation" element={<BlogPost5 />} />
               {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/courses" element={<Courses />} />

@@ -44,7 +44,7 @@ const BlogCard = ({ post }) => {
               </div>
               <div className="flex items-center gap-1">
                 <Clock size={14} />
-                <span>{post.readTime} min read</span>
+                <span>{post.readTime} mins read</span>
               </div>
               <div className="flex items-center gap-1">
                 <User size={14} />

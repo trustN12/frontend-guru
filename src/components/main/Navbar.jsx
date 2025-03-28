@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import { motion } from "framer-motion";
-import { LayoutDashboardIcon, Menu, User, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -50,8 +50,8 @@ const Navbar = () => {
     >
       <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
-          <div className="relative w-8 h-8 bg-primary rounded-lg overflow-hidden flex items-center justify-center text-white font-bold">
-            NB
+          <div className="relative w-9 h-9 rounded-full overflow-hidden flex items-center justify-center border-[1px] border-orange-400">
+            <img src="./profile.png" />
           </div>
           <span className="font-bold text-lg text-primary tracking-tight">
             Frontend Guru

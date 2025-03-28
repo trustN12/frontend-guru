@@ -1,3 +1,4 @@
+import ElevenLabsConversationalChat from "../AI-AGENT/AIChat";
 import SectionHeading from "../main/SectionHeading";
 
 const DashboardHome = ({ user, enrolledCourses }) => {
@@ -8,6 +9,8 @@ const DashboardHome = ({ user, enrolledCourses }) => {
 
   return (
     <div className="space-y-6">
+
+<ElevenLabsConversationalChat />
       <SectionHeading>Welcome, {user?.firstName || "User"}</SectionHeading>
 
       <div className="glass-card rounded-xl p-6">
