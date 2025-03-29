@@ -1,120 +1,83 @@
+// BuyCourses.jsx
 import SectionHeading from "../main/SectionHeading";
 import { Book, ShoppingCart, Video } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useUser } from "@clerk/clerk-react"; // Import Clerk hook
 import ElevenLabsConversationalChat from "../AI-AGENT/AIChat";
 
 const BuyCourses = ({
+  user,
   enrolledCourses,
   setEnrolledCourses,
   setIsProcessingPayment,
   availableCourses,
   loadRazorpay,
 }) => {
-  const [processingCourseId, setProcessingCourseId] = useState(null);
-  const { user } = useUser(); // Get Clerk user
+  const [processingCourseId, setProcessingCourseId] = useState(null); // Track the currently processing course
 
   const handlePayment = async (course) => {
     if (!user) {
       toast.error("Please sign in to purchase courses");
       return;
     }
-  
-    setProcessingCourseId(course.id);
-    setIsProcessingPayment(true);
-  
-    // Check if course is already enrolled in Clerk metadata
-    const enrolledCourseIds = user?.publicMetadata?.enrolledCourses || [];
-    if (enrolledCourseIds.includes(course.id)) {
+
+    setProcessingCourseId(course.id); // Set the currently processing course ID
+    setIsProcessingPayment(true); // Set processing state
+
+    // Check if course is already enrolled by this user
+    if (
+      enrolledCourses.some((c) => c.id === course.id && c.userId === user.id)
+    ) {
       toast.error(`You're already enrolled in ${course.title}`);
-      setProcessingCourseId(null);
-      setIsProcessingPayment(false);
+      setProcessingCourseId(null); // Reset processing course ID
+      setIsProcessingPayment(false); // Reset processing state
       return;
     }
-  
-    // Check if the course is free
-    if (course.isFree) {
-      // Directly enroll the user in the free course
-      const newCourse = {
-        ...course,
-        enrolledDate: new Date().toISOString(),
-        progress: 0,
-        completedLessons: 0,
-        totalLessons: Math.floor(Math.random() * 10) + 10,
-        paymentId: null, // No payment ID for free courses
-        userId: user.id,
-        videosUnlocked: true,
-      };
-  
-      try {
-        // Update Clerk metadata to store enrolled course
-        const updatedEnrolledCourses = [...enrolledCourseIds, course.id];
-        await user.update({
-          publicMetadata: {
-            enrolledCourses: updatedEnrolledCourses,
-          },
-        });
-  
-        // Update state
-        setEnrolledCourses((prevCourses) => [...prevCourses, newCourse]);
-  
-        toast.success(`Successfully enrolled in ${course.title}.`);
-      } catch (error) {
-        // console.error("Error updating user metadata:", error);
-        toast.error(`Failed to enroll in the course: ${error.message || "Please try again."}`);
-      } finally {
-        // Reset processing states
-        setProcessingCourseId(null);
-        setIsProcessingPayment(false);
-      }
-      return; // Exit the function early for free courses
-    }
-  
-    // Proceed with payment for non-free courses
+
     try {
+      // Load Razorpay script first
       const razorpayInstance = await loadRazorpay();
       if (!razorpayInstance) {
         toast.error("Failed to load payment gateway. Please try again later.");
-        setProcessingCourseId(null);
-        setIsProcessingPayment(false);
+        setProcessingCourseId(null); // Reset processing course ID
+        setIsProcessingPayment(false); // Reset processing state
         return;
       }
-  
+
       const options = {
-        key: "rzp_live_jjiWIKcc9YyuYg",
-        amount: course.discountedPrice,
+        key: "rzp_live_jjiWIKcc9YyuYg", // Test key - rzp_test_7FEQanUQWAA66x"
+        amount: course.discountedPrice, // Use discounted price
         currency: "INR",
         name: "Frontend Guru Academy",
         description: `Enrollment for ${course.title}`,
         image: "/programmer.png",
-        handler: async function (response) {
+        handler: function (response) {
+          // Payment successful
           const newCourse = {
             ...course,
             enrolledDate: new Date().toISOString(),
             progress: 0,
             completedLessons: 0,
-            totalLessons: Math.floor(Math.random() * 10) + 10,
+            totalLessons: Math.floor(Math.random() * 10) + 10, // Random number of lessons between 10-20
             paymentId: response.razorpay_payment_id,
             userId: user.id,
             videosUnlocked: true,
           };
-  
-          // Update Clerk metadata to store enrolled course
-          const updatedEnrolledCourses = [...enrolledCourseIds, course.id];
-          await user.update({
-            publicMetadata: {
-              enrolledCourses: updatedEnrolledCourses,
-            },
-          });
-  
-          // Update state
-          setEnrolledCourses((prevCourses) => [...prevCourses, newCourse]);
-  
-          toast.success(`Successfully enrolled in ${course.title}.`);
-          setProcessingCourseId(null);
-          setIsProcessingPayment(false);
+
+          // Update state and local storage
+          const updatedCourses = [...enrolledCourses, newCourse];
+          setEnrolledCourses(updatedCourses);
+          localStorage.setItem(
+            "enrolledCourses",
+            JSON.stringify(updatedCourses)
+          );
+
+          toast.success(
+            `Successfully enrolled in ${course.title}. Course videos are now available in your schedule.`
+          );
+          setProcessingCourseId(null); // Reset processing course ID
+          setIsProcessingPayment(false); // Reset processing state
         },
         prefill: {
           name: user?.fullName || "",
@@ -125,28 +88,22 @@ const BuyCourses = ({
         },
         modal: {
           ondismiss: function () {
-            setProcessingCourseId(null);
-            setIsProcessingPayment(false);
+            setProcessingCourseId(null); // Reset processing course ID
+            setIsProcessingPayment(false); // Reset processing state
             toast.error("Payment cancelled");
           },
         },
       };
-  
+
       const razorpay = new razorpayInstance(options);
       razorpay.open();
     } catch (error) {
       console.error("Razorpay error:", error);
       toast.error("Payment failed. Please try again.");
-      setProcessingCourseId(null);
-      setIsProcessingPayment(false);
+      setProcessingCourseId(null); // Reset processing course ID
+      setIsProcessingPayment(false); // Reset processing state
     }
   };
-
-
-
-
-
-
 
   return (
     <div className="space-y-6">
@@ -214,19 +171,25 @@ const BuyCourses = ({
               </div>
             </CardContent>
             <CardFooter className="bg-muted/20 px-6 py-3">
-            <button
+              <button
                 onClick={() => handlePayment(course)}
                 disabled={
-                  processingCourseId === course.id ||
-                  user?.publicMetadata?.enrolledCourses?.includes(course.id)
+                  processingCourseId === course.id || // Disable if this course is being processed
+                  enrolledCourses.some(
+                    (c) => c.id === course.id && c.userId === user?.id
+                  )
                 }
                 className={`w-full flex items-center justify-center gap-2 py-2 rounded-md ${
-                  user?.publicMetadata?.enrolledCourses?.includes(course.id)
+                  enrolledCourses.some(
+                    (c) => c.id === course.id && c.userId === user?.id
+                  )
                     ? "bg-green-500 text-white cursor-default"
                     : "bg-primary text-white hover:bg-primary/90"
                 } transition-colors`}
               >
-                {user?.publicMetadata?.enrolledCourses?.includes(course.id)
+                {enrolledCourses.some(
+                  (c) => c.id === course.id && c.userId === user?.id
+                )
                   ? "Enrolled"
                   : processingCourseId === course.id
                   ? "Processing..."
