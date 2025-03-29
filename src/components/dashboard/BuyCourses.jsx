@@ -21,10 +21,10 @@ const BuyCourses = ({
       toast.error("Please sign in to purchase courses");
       return;
     }
-
+  
     setProcessingCourseId(course.id);
     setIsProcessingPayment(true);
-
+  
     // Check if course is already enrolled in Clerk metadata
     const enrolledCourseIds = user?.publicMetadata?.enrolledCourses || [];
     if (enrolledCourseIds.includes(course.id)) {
@@ -33,7 +33,46 @@ const BuyCourses = ({
       setIsProcessingPayment(false);
       return;
     }
-
+  
+    // Check if the course is free
+    if (course.isFree) {
+      // Directly enroll the user in the free course
+      const newCourse = {
+        ...course,
+        enrolledDate: new Date().toISOString(),
+        progress: 0,
+        completedLessons: 0,
+        totalLessons: Math.floor(Math.random() * 10) + 10,
+        paymentId: null, // No payment ID for free courses
+        userId: user.id,
+        videosUnlocked: true,
+      };
+  
+      try {
+        // Update Clerk metadata to store enrolled course
+        const updatedEnrolledCourses = [...enrolledCourseIds, course.id];
+        await user.update({
+          publicMetadata: {
+            enrolledCourses: updatedEnrolledCourses,
+          },
+        });
+  
+        // Update state
+        setEnrolledCourses((prevCourses) => [...prevCourses, newCourse]);
+  
+        toast.success(`Successfully enrolled in ${course.title}.`);
+      } catch (error) {
+        // console.error("Error updating user metadata:", error);
+        toast.error(`Failed to enroll in the course: ${error.message || "Please try again."}`);
+      } finally {
+        // Reset processing states
+        setProcessingCourseId(null);
+        setIsProcessingPayment(false);
+      }
+      return; // Exit the function early for free courses
+    }
+  
+    // Proceed with payment for non-free courses
     try {
       const razorpayInstance = await loadRazorpay();
       if (!razorpayInstance) {
@@ -42,7 +81,7 @@ const BuyCourses = ({
         setIsProcessingPayment(false);
         return;
       }
-
+  
       const options = {
         key: "rzp_live_jjiWIKcc9YyuYg",
         amount: course.discountedPrice,
@@ -61,22 +100,18 @@ const BuyCourses = ({
             userId: user.id,
             videosUnlocked: true,
           };
-
-          // Update state and local storage
-          const updatedCourses = [...enrolledCourses, newCourse];
-          setEnrolledCourses(updatedCourses);
-          localStorage.setItem(
-            "enrolledCourses",
-            JSON.stringify(updatedCourses)
-          );
-
+  
           // Update Clerk metadata to store enrolled course
+          const updatedEnrolledCourses = [...enrolledCourseIds, course.id];
           await user.update({
             publicMetadata: {
-              enrolledCourses: [...enrolledCourseIds, course.id],
+              enrolledCourses: updatedEnrolledCourses,
             },
           });
-
+  
+          // Update state
+          setEnrolledCourses((prevCourses) => [...prevCourses, newCourse]);
+  
           toast.success(`Successfully enrolled in ${course.title}.`);
           setProcessingCourseId(null);
           setIsProcessingPayment(false);
@@ -96,7 +131,7 @@ const BuyCourses = ({
           },
         },
       };
-
+  
       const razorpay = new razorpayInstance(options);
       razorpay.open();
     } catch (error) {
@@ -106,6 +141,12 @@ const BuyCourses = ({
       setIsProcessingPayment(false);
     }
   };
+
+
+
+
+
+
 
   return (
     <div className="space-y-6">
@@ -173,7 +214,7 @@ const BuyCourses = ({
               </div>
             </CardContent>
             <CardFooter className="bg-muted/20 px-6 py-3">
-              <button
+            <button
                 onClick={() => handlePayment(course)}
                 disabled={
                   processingCourseId === course.id ||

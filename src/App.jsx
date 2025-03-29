@@ -25,7 +25,7 @@ import BlogPost5 from "./pages/blog-pages/Blog-Post5";
 
 
 
-const PUBLISHABLE_KEY = "pk_test_ZXF1YWwtdW5pY29ybi0xLmNsZXJrLmFjY291bnRzLmRldiQ";
+const PUBLISHABLE_KEY = "pk_test_ZW5nYWdlZC1hbmVtb25lLTM3LmNsZXJrLmFjY291bnRzLmRldiQ";
 
 const queryClient = new QueryClient();
 
