@@ -5,6 +5,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useState } from "react";
 import ElevenLabsConversationalChat from "../AI-AGENT/AIChat";
+import { setDoc, doc } from "firebase/firestore";
+import { db } from "@/utils/firebaseConfig";
 
 const BuyCourses = ({
   user,
@@ -18,78 +20,91 @@ const BuyCourses = ({
 
   const handlePayment = async (course) => {
     if (!user) {
-      toast.error("Please sign in to purchase courses");
+      toast.error("Please log in to purchase courses");
       return;
     }
 
-    setProcessingCourseId(course.id); // Set the currently processing course ID
-    setIsProcessingPayment(true); // Set processing state
+    // console.log("User  ID:", user.id);
 
-    // Check if course is already enrolled by this user
+    setProcessingCourseId(course.id);
+    setIsProcessingPayment(true);
+
     if (
       enrolledCourses.some((c) => c.id === course.id && c.userId === user.id)
     ) {
       toast.error(`You're already enrolled in ${course.title}`);
-      setProcessingCourseId(null); // Reset processing course ID
-      setIsProcessingPayment(false); // Reset processing state
+      setProcessingCourseId(null);
+      setIsProcessingPayment(false);
       return;
     }
 
     try {
-      // Load Razorpay script first
       const razorpayInstance = await loadRazorpay();
       if (!razorpayInstance) {
         toast.error("Failed to load payment gateway. Please try again later.");
-        setProcessingCourseId(null); // Reset processing course ID
-        setIsProcessingPayment(false); // Reset processing state
+        setProcessingCourseId(null);
+        setIsProcessingPayment(false);
         return;
       }
 
       const options = {
-        key: "rzp_live_jjiWIKcc9YyuYg", // Test key - rzp_test_7FEQanUQWAA66x"
-        amount: course.discountedPrice, // Use discounted price
+        key: import.meta.env.VITE_RAZORPAY_TEST_KEY,
+        amount: course.discountedPrice,
         currency: "INR",
         name: "Frontend Guru Academy",
         description: `Enrollment for ${course.title}`,
         image: "/programmer.png",
-        handler: function (response) {
-          // Payment successful
+        handler: async function (response) {
+          console.log("Razorpay Response:", response); // Log the response
+
           const newCourse = {
             ...course,
             enrolledDate: new Date().toISOString(),
             progress: 0,
             completedLessons: 0,
-            totalLessons: Math.floor(Math.random() * 10) + 10, // Random number of lessons between 10-20
+            totalLessons: Math.floor(Math.random() * 10) + 10,
             paymentId: response.razorpay_payment_id,
             userId: user.id,
+            fullName: user.fullName || "",
+            emailAddress: user.primaryEmailAddress?.emailAddress || "",
             videosUnlocked: true,
           };
 
-          // Update state and local storage
-          const updatedCourses = [...enrolledCourses, newCourse];
-          setEnrolledCourses(updatedCourses);
-          localStorage.setItem(
-            "enrolledCourses",
-            JSON.stringify(updatedCourses)
-          );
+          try {
+            const docId = `${user.id}_${course.id}`;
+            // console.log("Document ID:", docId);
+            // console.log("New Course Data:", newCourse);
 
-          toast.success(
-            `Successfully enrolled in ${course.title}. Course videos are now available in your schedule.`
-          );
-          setProcessingCourseId(null); // Reset processing course ID
-          setIsProcessingPayment(false); // Reset processing state
+            // Save to Firestore
+            await setDoc(doc(db, "enrolledCourses", docId), newCourse);
+
+            // Update state
+            const updatedCourses = [...enrolledCourses, newCourse];
+            setEnrolledCourses(updatedCourses);
+
+            toast.success(
+              `Successfully enrolled in ${course.title}. Course videos are now available in your schedule.`
+            );
+          } catch (error) {
+            // console.error("Error saving to Firestore:", error);
+            toast.error("Failed to save enrollment. Please try again.");
+          } finally {
+            // Reset processing state
+            setProcessingCourseId(null);
+            setIsProcessingPayment(false);
+          }
         },
         prefill: {
-          name: user?.fullName || "",
-          email: user?.primaryEmailAddress?.emailAddress || "",
+          name: user.fullName || "",
+          email: user.primaryEmailAddress?.emailAddress || "",
         },
         theme: {
           color: "#6366f1",
         },
         modal: {
           ondismiss: function () {
-            setProcessingCourseId(null); // Reset processing course ID
-            setIsProcessingPayment(false); // Reset processing state
+            setProcessingCourseId(null);
+            setIsProcessingPayment(false);
             toast.error("Payment cancelled");
           },
         },
@@ -98,10 +113,10 @@ const BuyCourses = ({
       const razorpay = new razorpayInstance(options);
       razorpay.open();
     } catch (error) {
-      console.error("Razorpay error:", error);
+      // console.error("Razorpay error:", error);
       toast.error("Payment failed. Please try again.");
-      setProcessingCourseId(null); // Reset processing course ID
-      setIsProcessingPayment(false); // Reset processing state
+      setProcessingCourseId(null);
+      setIsProcessingPayment(false);
     }
   };
 
@@ -163,9 +178,9 @@ const BuyCourses = ({
               <div className="flex justify-between items-center text-sm text-muted-foreground mb-1">
                 <span>Duration: {course.duration}</span>
                 <span className="text-3xl font-semibold text-primary">
-                  ₹{course.discountedPrice / 100}{" "}
+                  ₹{course.discountedPrice}{" "}
                   <span className="line-through text-lg font-medium text-gray-500">
-                    ₹{course.price / 100}
+                    ₹{course.price}
                   </span>
                 </span>
               </div>

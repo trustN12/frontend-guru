@@ -176,7 +176,7 @@ const Schedule = ({ user, enrolledCourses, availableCourses, setActiveTab, markV
                       onClick={() => setActiveTab("buy-courses")}
                       className="w-full py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
                     >
-                      Enroll to Unlock (₹{course.discountedPrice / 100})
+                      Enroll to Unlock (₹{course.discountedPrice})
                     </button>
                   </CardFooter>
                 </Card>

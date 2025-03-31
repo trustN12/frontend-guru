@@ -1,13 +1,10 @@
 import { motion } from "framer-motion";
 import {
-  User,
   FileText,
   Book,
   CheckCircle,
   Clock,
   ShoppingCart,
-  Code,
-  Code2,
 } from "lucide-react";
 
 const DashboardSidebar = ({ activeTab, setActiveTab, user }) => {

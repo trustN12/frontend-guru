@@ -67,9 +67,9 @@ const DashboardHome = ({ user, enrolledCourses }) => {
         <h3 className="text-lg font-medium mb-4">Recent Announcements</h3>
         <div className="space-y-4">
           <div className="border-b border-border pb-4">
-            <p className="font-medium">New React Course Coming Soon</p>
+            <p className="font-medium">All Courses Coming Soon</p>
             <p className="text-sm text-muted-foreground">
-              A new advanced React patterns course will be available soon.
+              Stay Updated! AI and React courses will be available soon.
             </p>
             <p className="text-xs text-muted-foreground mt-1">March, 2025</p>
           </div>

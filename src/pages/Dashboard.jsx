@@ -1,39 +1,64 @@
 // Dashboard.jsx
 import { useState, useEffect } from "react";
-import { useUser  } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { motion } from "framer-motion";
-import { toast } from "sonner"; 
+import { toast } from "sonner";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardHome from "../components/dashboard/DashboardHome";
 import MyCourses from "../components/dashboard/MyCourses";
 import ProgressTracker from "../components/dashboard/ProgressTracker";
 import Schedule from "../components/dashboard/Schedule";
 import BuyCourses from "../components/dashboard/BuyCourses";
+import { db } from "@/utils/firebaseConfig";
+import { getDocs, collection, query, where } from "firebase/firestore";
 
 const Dashboard = () => {
-  const { user } = useUser ();
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
-  // Load enrolled courses from localStorage on component mount
+  // // Load enrolled courses from localStorage on component mount
+  // useEffect(() => {
+  //   const savedCourses = localStorage.getItem("enrolledCourses");
+  //   if (savedCourses) {
+  //     try {
+  //       const parsedCourses = JSON.parse(savedCourses);
+  //       // Ensure each course has watchedVideos initialized
+  //       const updatedCourses = parsedCourses.map(course => ({
+  //         ...course,
+  //         watchedVideos: course.watchedVideos || [] // Initialize if undefined
+  //       }));
+  //       setEnrolledCourses(updatedCourses);
+  //     } catch (error) {
+  //       console.error("Error parsing saved courses:", error);
+  //       setEnrolledCourses([]);
+  //     }
+  //   }
+  // }, []);
+
+  // Load enrolled courses from Firestore on component mount
   useEffect(() => {
-    const savedCourses = localStorage.getItem("enrolledCourses");
-    if (savedCourses) {
+    const fetchEnrolledCourses = async () => {
+      if (!user) return; // Ensure user is logged in
+
       try {
-        const parsedCourses = JSON.parse(savedCourses);
-        // Ensure each course has watchedVideos initialized
-        const updatedCourses = parsedCourses.map(course => ({
-          ...course,
-          watchedVideos: course.watchedVideos || [] // Initialize if undefined
-        }));
-        setEnrolledCourses(updatedCourses);
+        const enrolledCoursesRef = collection(db, "enrolledCourses");
+        const q = query(enrolledCoursesRef, where("userId", "==", user.id));
+        const querySnapshot = await getDocs(q);
+        const courses = [];
+        querySnapshot.forEach((doc) => {
+          courses.push(doc.data());
+        });
+        setEnrolledCourses(courses);
       } catch (error) {
-        console.error("Error parsing saved courses:", error);
-        setEnrolledCourses([]);
+        // console.error("Error fetching enrolled courses:", error);
+        toast.error("Failed to load enrolled courses. Please try again.");
       }
-    }
-  }, []);
+    };
+
+    fetchEnrolledCourses();
+  }, [user]); // Run effect when user changes
 
   // Function to load Razorpay script safely
   const loadRazorpay = () => {
@@ -60,15 +85,17 @@ const Dashboard = () => {
   };
 
   // Function to update course progress
-  const markVideoAsWatched = (courseId, videoId) => {
+  const markVideoAsWatched = async (courseId, videoId) => {
     const updatedCourses = enrolledCourses.map((course) => {
       if (course.id === courseId && course.userId === user.id) {
         // Ensure watchedVideos is initialized
         const watchedVideos = course.watchedVideos || [];
-        
+
         if (!watchedVideos.includes(videoId)) {
           const newWatchedVideos = [...watchedVideos, videoId];
-          const newProgress = Math.round((newWatchedVideos.length / course.totalLessons) * 100);
+          const newProgress = Math.round(
+            (newWatchedVideos.length / course.totalLessons) * 100
+          );
           const newCompletedLessons = newWatchedVideos.length;
 
           return {
@@ -82,134 +109,103 @@ const Dashboard = () => {
       return course;
     });
 
+    // Update Firestore with the new course data
+    await setDoc(
+      doc(db, "enrolledCourses", `${user.id}_${courseId}`),
+      updatedCourses.find((c) => c.id === courseId)
+    );
+
     setEnrolledCourses(updatedCourses);
-    localStorage.setItem("enrolledCourses", JSON.stringify(updatedCourses));
     toast.success("Video marked as watched");
   };
 
-  
-
- 
-
- // Available courses data with videos
- const availableCourses = [
-  {
-    id: 1,
-    title: "JavaScript Intermediate",
-    description:
-      "Build a strong foundation in JavaScript with a focus on modern ES6+ features.",
-    price: 29900, // In paise (₹299)
-    discountedPrice: 1000,
-    duration: "2 weeks",
-    topics: ["async/await", "Promises", "Destructuring", "Pollyfills", "methods"],
-    videos: [
-      {
-        id: 1,
-        title: "Promises & async/await",
-        duration: "19:50",
-        url: "https://youtube.com/embed/syZLtkJjnQk",
-      },
-      {
-        id: 2,
-        title: "Spread Operator",
-        duration: "08:39",
-        url: "https://youtube.com/embed/LgVmKfkgyUU",
-      },
-      {
-        id: 3,
-        title: "call,apply & bind methods",
-        duration: "09:56",
-        url: "https://youtube.com/embed/k1Eo4D9xSDo",
-      },
-      {
-        id: 4,
-        title: "Destructuring",
-        duration: "10:51",
-        url: "https://youtube.com/embed/8OGNCN1pIw8",
-      },
-      {
-        id: 5,
-        title: "Pollyfills",
-        duration: "11:44",
-        url: "https://youtube.com/embed/u5ipjx_q9cs",
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "React Fundamentals",
-    description:
-      "Learn React from the ground up, including components, props, state, and JSX.",
-    price: 49900, // In paise (₹499)
-    discountedPrice: 19900,
-    duration: "10 weeks",
-    topics: ["Components", "Props & State", "Hooks", "JSX"],
-    videos: [
-      {
-        id: 1,
-        title: "React Basics",
-        duration: "20:15",
-        url: "https://www.youtube.com/embed/w7ejDZ8SWv8",
-      },
-      {
-        id: 2,
-        title: "Components and Props",
-        duration: "25:10",
-        url: "https://www.youtube.com/embed/0sSYmRImgRY",
-      },
-      {
-        id: 3,
-        title: "State and Lifecycle",
-        duration: "23:05",
-        url: "https://www.youtube.com/embed/4ORZ1GmjaMc",
-      },
-      {
-        id: 4,
-        title: "Hooks Deep Dive",
-        duration: "28:45",
-        url: "https://www.youtube.com/embed/TNhaISOUy6Q",
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "Modern CSS & Tailwind",
-    description:
-      "Build responsive, beautiful UIs with modern CSS techniques and Tailwind CSS.",
-    price: 24900, // In paise (₹2499)
-    discountedPrice: 9900,
-    duration: "6 weeks",
-    topics: ["Flexbox & Grid", "Responsive Design", "Animations", "Tailwind"],
-    videos: [
-      {
-        id: 1,
-        title: "CSS Fundamentals",
-        duration: "16:40",
-        url: "https://www.youtube.com/embed/1Rs2ND1ryYc",
-      },
-      {
-        id: 2,
-        title: "Tailwind Basics",
-        duration: "19:55",
-        url: "https://www.youtube.com/embed/pfaSUYaSgRo",
-      },
-      {
-        id: 3,
-        title: "Responsive Design",
-        duration: "21:30",
-        url: "https://www.youtube.com/embed/srvUrASNj0s",
-      },
-      {
-        id: 4,
-        title: "Advanced Animations",
-        duration: "24:20",
-        url: "https://www.youtube.com/embed/D6EiRSRhsbQ",
-      },
-    ],
-  },
-];
-
-
+  // Available courses data with videos
+  const availableCourses = [
+    {
+      id: 1,
+      title: "JavaScript Intermediate",
+      description:
+        "Build a strong foundation in JavaScript with a focus on modern ES6+ features.",
+      price: 299,
+      discountedPrice: 1,
+      duration: "2 weeks",
+      topics: [
+        "async/await",
+        "Promises",
+        "Destructuring",
+        "Pollyfills",
+        "methods",
+      ],
+      videos: [
+        {
+          id: 1,
+          title: "Promises & async/await",
+          duration: "19:50",
+          url: "https://youtube.com/embed/syZLtkJjnQk",
+        },
+        {
+          id: 2,
+          title: "Spread Operator",
+          duration: "08:39",
+          url: "https://youtube.com/embed/LgVmKfkgyUU",
+        },
+        {
+          id: 3,
+          title: "call,apply & bind methods",
+          duration: "09:56",
+          url: "https://youtube.com/embed/k1Eo4D9xSDo",
+        },
+        {
+          id: 4,
+          title: "Destructuring",
+          duration: "10:51",
+          url: "https://youtube.com/embed/8OGNCN1pIw8",
+        },
+        {
+          id: 5,
+          title: "Pollyfills",
+          duration: "11:44",
+          url: "https://youtube.com/embed/u5ipjx_q9cs",
+        },
+      ],
+    },
+    {
+      id: 2,
+      title: "React Fundamentals",
+      description:
+        "Learn React from the ground up, including components, props, state, and JSX.",
+      price: 399,
+      discountedPrice: 10,
+      duration: "10 weeks",
+      topics: ["Components", "Props & State", "Hooks", "JSX"],
+      videos: [
+        {
+          id: 1,
+          title: "React Basics",
+          duration: "20:15",
+          url: "https://www.youtube.com/embed/w7ejDZ8SWv8",
+        },
+        {
+          id: 2,
+          title: "Components and Props",
+          duration: "25:10",
+          url: "https://www.youtube.com/embed/0sSYmRImgRY",
+        },
+        {
+          id: 3,
+          title: "State and Lifecycle",
+          duration: "23:05",
+          url: "https://www.youtube.com/embed/4ORZ1GmjaMc",
+        },
+        {
+          id: 4,
+          title: "Hooks Deep Dive",
+          duration: "28:45",
+          url: "https://www.youtube.com/embed/TNhaISOUy6Q",
+        },
+      ],
+    },
+  ];
 
   return (
     <section className="pt-24 pb-16 md:pt-32 md:pb-24">

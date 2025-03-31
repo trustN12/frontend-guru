@@ -2,24 +2,24 @@ import emailjs from '@emailjs/browser';
 
 // Initialize EmailJS with user ID
 export const initEmailJs = () => {
-  emailjs.init("72yf9lHWZdhA6bsR4"); // Replace with your actual EmailJS public key
+  emailjs.init(import.meta.env.VITE_EMAILJS_USER_ID); // Replace with your actual EmailJS public key
 };
 
 export const sendContactForm = async (formData) => {
   try {
     // Ensure EmailJS is initialized
-    emailjs.init("72yf9lHWZdhA6bsR4");
+    emailjs.init(import.meta.env.VITE_EMAILJS_USER_ID);
 
     const result = await emailjs.send(
-      "service_2p9tq8a", // EmailJS service ID
-      "template_r3v3ijd", // EmailJS template ID
+      import.meta.env.VITE_EMAILJS_SERVICE_ID, // EmailJS service ID
+      import.meta.env.VITE_EMAILJS_TEMPLATE_ID, // EmailJS template ID
       {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         message: formData.message,
       },
-      "72yf9lHWZdhA6bsR4" // EmailJS Public Key (User ID)
+      import.meta.env.VITE_EMAILJS_USER_ID // EmailJS Public Key (User ID)
     );
 
     console.log("Email sent successfully:", result);
@@ -34,14 +34,15 @@ export const sendContactForm = async (formData) => {
 export const sendPurchaseNotification = async (courseData, userData) => {
   try {
     const result = await emailjs.send(
-      "service_2p9tq8a", // EmailJS service ID
-      "template_r3v3ijd", // EmailJS template ID
+      import.meta.env.VITE_EMAILJS_SERVICE_ID, // EmailJS service ID
+      import.meta.env.VITE_EMAILJS_TEMPLATE_ID, // EmailJS template ID
       {
         name: userData.fullName || "User",
         email: userData.primaryEmailAddress?.emailAddress || "No email provided",
         phone: "N/A",
         message: `New course purchase: ${courseData.title} for ₹${courseData.price/100}. Payment ID: ${courseData.paymentId || 'Pending'}. UPI ID for payment: 9679188394@ybl`,
-      }
+      },
+      import.meta.env.VITE_EMAILJS_USER_ID 
     );
     
     return { success: true, result };

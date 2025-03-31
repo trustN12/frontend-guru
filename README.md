@@ -13,4 +13,5 @@
 - MagicUI
 - razorpay@2.9.6
 - @11labs/react@0.1.0
+- firebase@11.5.0
 
