@@ -126,8 +126,8 @@ const Dashboard = () => {
       title: "JavaScript Intermediate",
       description:
         "Build a strong foundation in JavaScript with a focus on modern ES6+ features.",
-      price: 299,
-      discountedPrice: 1,
+      price: 29900,
+      discountedPrice: 1000,
       duration: "2 weeks",
       topics: [
         "async/await",
@@ -174,8 +174,8 @@ const Dashboard = () => {
       title: "React Fundamentals",
       description:
         "Learn React from the ground up, including components, props, state, and JSX.",
-      price: 399,
-      discountedPrice: 10,
+      price: 39900,
+      discountedPrice: 10000,
       duration: "10 weeks",
       topics: ["Components", "Props & State", "Hooks", "JSX"],
       videos: [
