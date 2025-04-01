@@ -24,18 +24,20 @@ const BuyCourses = ({
       return;
     }
 
-    // console.log("User  ID:", user.id); 
-  
+    // console.log("User  ID:", user.id);
+
     setProcessingCourseId(course.id);
     setIsProcessingPayment(true);
-  
-    if (enrolledCourses.some((c) => c.id === course.id && c.userId === user.id)) {
+
+    if (
+      enrolledCourses.some((c) => c.id === course.id && c.userId === user.id)
+    ) {
       toast.error(`You're already enrolled in ${course.title}`);
       setProcessingCourseId(null);
       setIsProcessingPayment(false);
       return;
     }
-  
+
     try {
       const razorpayInstance = await loadRazorpay();
       if (!razorpayInstance) {
@@ -44,9 +46,9 @@ const BuyCourses = ({
         setIsProcessingPayment(false);
         return;
       }
-  
+
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_TEST_KEY,
+        key: import.meta.env.VITE_RAZORPAY_LIVE_KEY,
         amount: course.discountedPrice,
         currency: "INR",
         name: "Frontend Guru Academy",
@@ -54,7 +56,7 @@ const BuyCourses = ({
         image: "/programmer.png",
         handler: async function (response) {
           console.log("Razorpay Response:", response); // Log the response
-        
+
           const newCourse = {
             ...course,
             enrolledDate: new Date().toISOString(),
@@ -67,20 +69,22 @@ const BuyCourses = ({
             emailAddress: user.primaryEmailAddress?.emailAddress || "",
             videosUnlocked: true,
           };
-        
+
           try {
             const docId = `${user.id}_${course.id}`;
             // console.log("Document ID:", docId);
             // console.log("New Course Data:", newCourse);
-        
+
             // Save to Firestore
             await setDoc(doc(db, "enrolledCourses", docId), newCourse);
-            
+
             // Update state
             const updatedCourses = [...enrolledCourses, newCourse];
             setEnrolledCourses(updatedCourses);
-        
-            toast.success(`Successfully enrolled in ${course.title}. Course videos are now available in your schedule.`);
+
+            toast.success(
+              `Successfully enrolled in ${course.title}. Course videos are now available in your schedule.`
+            );
           } catch (error) {
             // console.error("Error saving to Firestore:", error);
             toast.error("Failed to save enrollment. Please try again.");
@@ -105,7 +109,7 @@ const BuyCourses = ({
           },
         },
       };
-  
+
       const razorpay = new razorpayInstance(options);
       razorpay.open();
     } catch (error) {
@@ -182,30 +186,32 @@ const BuyCourses = ({
               </div>
             </CardContent>
             <CardFooter className="bg-muted/20 px-6 py-3">
-            <button
-  onClick={() => handlePayment(course)}
-  disabled={
-    processingCourseId === course.id || // Disable if this course is being processed
-    enrolledCourses.some(
-      (c) => c.id === course.id && c.userId === user?.id
-    )
-  }
-  className={`w-full flex items-center justify-center gap-2 py-2 rounded-md ${
-    enrolledCourses.some(
-      (c) => c.id === course.id && c.userId === user?.id
-    )
-      ? "bg-green-500 text-white cursor-default"
-      : "bg-primary text-white hover:bg-primary/90"
-  } transition-colors`}
->
-  {enrolledCourses.some(
-    (c) => c.id === course.id && c.userId === user?.id
-  )
-    ? "Enrolled"
-    : processingCourseId === course.id
-    ? "Processing..."
-    : "Buy Now"}
-</button>
+              <button
+                onClick={() => handlePayment(course)}
+                disabled={
+                  processingCourseId === course.id || // Disable if this course is being processed
+                  enrolledCourses.some(
+                    (c) => c.id === course.id && c.userId === user?.id
+                  )
+                }
+                className={`w-full flex items-center justify-center gap-2 py-2 rounded-md ${
+                  enrolledCourses.some(
+                    (c) => c.id === course.id && c.userId === user?.id
+                  )
+                    ? "bg-green-500 text-white cursor-default"
+                    : "bg-primary text-white hover:bg-primary/90"
+                } transition-colors`}
+              >
+                {enrolledCourses.some(
+                  (c) => c.id === course.id && c.userId === user?.id
+                )
+                  ? "Enrolled"
+                  : processingCourseId === course.id
+                  ? "Processing..."
+                  : "Buy Now"}
+              </button>
+
+
             </CardFooter>
           </Card>
         ))}

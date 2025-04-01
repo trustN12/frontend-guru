@@ -67,18 +67,55 @@ const Home = () => {
                 real-world applications.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                {/* Explore Courses Button */}
                 <Link
                   to="/courses"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="relative shadow-xl inline-flex h-12 w-full sm:w-auto active:scale-95 transition overflow-hidden rounded-lg p-[1.5px] focus:outline-none"
                 >
-                  Explore Courses
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,red_0%,orange_50%,orangered_100%)]"></span>
+                  <span className="inline-flex h-full w-full items-center justify-center rounded-lg bg-slate-950 px-6 py-3 text-base sm:text-lg font-medium text-white backdrop-blur-3xl gap-2">
+                    Explore Courses
+                    <ArrowRight
+                      size={22}
+                      className="border-white border-[1px] p-1 rounded-full"
+                    />
+                  </span>
                 </Link>
+
+                {/* Contact Me Button */}
                 <Link
                   to="/contact"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-secondary text-primary font-medium hover:bg-secondary/70 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="inline-flex h-12 w-full sm:w-auto items-center justify-center px-6 py-3 text-base sm:text-lg font-medium text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 gap-2 shadow-xl bg-gray-200 backdrop-blur-md border-slate-950 before:absolute border before:transition-all before:duration-700 before:hover:w-full before:-left-full before:hover:left-0 before:rounded-lg before:bg-[#FEF3C7] hover:text-slate-950 before:-z-10 before:aspect-square before:hover:scale-150 before:hover:duration-700 z-10 overflow-hidden rounded-lg group"
                 >
                   Contact Me
+                  <svg
+                    className="w-6 h-6 group-hover:rotate-90 group-hover:bg-gray-50 text-gray-50 ease-linear duration-300 rounded-full border border-[#938e0c] group-hover:border-none p-1 rotate-45"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlSpace="preserve"
+                    viewBox="0 0 6.827 6.827"
+                  >
+                    <g id="Layer_x0020_1">
+                      <g id="_491478824">
+                        <path
+                          id="_491463224"
+                          d="M.909 2.24c.067 1.39 1.968 3.158 3.255 3.57.863.275 2.148-.269 1.64-.777L5 4.23c-.122-.123-.32-.108-.439.01l-.46.462c-.992-.54-1.408-.966-1.953-1.951l.462-.462c.119-.119.132-.317.01-.439l-.803-.803C1.37.598.883 1.715.908 2.24z"
+                          style={{ fill: "green" }}
+                        />
+                        <path
+                          id="_491478584"
+                          className="fil2"
+                          d="m.909 2.24 1.24.51.462-.46c.119-.12.132-.318.01-.44l-.803-.803C1.37.598.883 1.715.908 2.24z"
+                          style={{ fill: "green" }}
+                        />
+                        <path
+                          id="_491478176"
+                          className="fil2"
+                          d="M4.164 5.81c.863.275 2.148-.269 1.64-.777L5 4.23c-.122-.123-.32-.108-.439.01l-.46.462.062 1.107z"
+                          style={{ fill: "green" }}
+                        />
+                      </g>
+                    </g>
+                  </svg>
                 </Link>
               </div>
             </motion.div>

@@ -4,12 +4,14 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
+
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,6 +42,8 @@ const Navbar = () => {
     { name: "Contact", path: "/contact" },
   ];
 
+  
+
   return (
     <motion.header
       className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${
@@ -49,13 +53,19 @@ const Navbar = () => {
       }`}
     >
       <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
+        
         <Link to="/" className="flex items-center gap-2">
           <div className="relative w-9 h-9 rounded-full overflow-hidden flex items-center justify-center border-[1px] border-orange-400">
             <img src="./profile.png" />
           </div>
-          <span className="font-bold text-lg text-primary tracking-tight">
-            Frontend Guru
-          </span>
+          <div className="relative mb-3">
+  <span className="font-bold text-lg text-primary tracking-tight">
+    Frontend Guru
+    <span className="absolute text-xs font-medium text-gray-500 top-[2em] left-[0em]" >
+      v1.0.0
+    </span>
+  </span>
+</div>
         </Link>
 
         {/* Desktop Navigation */}
@@ -170,16 +180,16 @@ const Navbar = () => {
             <div className="mt-4 flex flex-col gap-2">
               <SignedOut>
                 <Link
+                  to="/sign-up"
+                  className="py-2 px-4 text-center text-white bg-primary rounded-md hover:bg-primary/90"
+                >
+                  Create Account
+                </Link>
+                <Link
                   to="/sign-in"
                   className="py-2 px-4 text-center text-primary border border-primary rounded-md hover:bg-primary/5"
                 >
                   Log In
-                </Link>
-                <Link
-                  to="/sign-up"
-                  className="py-2 px-4 text-center text-white bg-primary rounded-md hover:bg-primary/90"
-                >
-                  Sign Up
                 </Link>
               </SignedOut>
             </div>

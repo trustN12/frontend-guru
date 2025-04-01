@@ -1,4 +1,4 @@
-import { SignUp as ClerkSignUp } from "@clerk/clerk-react";
+import { SignUp as ClerkSignUp, SignIn } from "@clerk/clerk-react";
 import { motion } from "framer-motion";
 
 const SignUp = () => {
@@ -15,7 +15,7 @@ const SignUp = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-6"
         >
-          <h1 className="text-3xl font-bold text-amber-800">Sign Up</h1>
+          <h1 className="text-3xl font-bold text-amber-800">Create Account</h1>
           <p className="text-amber-700 text-sm">Join Frontend Guru Academy today</p>
         </motion.div>
 

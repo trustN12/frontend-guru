@@ -41,6 +41,7 @@ const App = () => (
       signInFallbackRedirectUrl="/"
       signUpFallbackRedirectUrl="/"
       afterSignOutUrl="/"
+      afterSignInUrl="/dashboard"
       
     >
       <TooltipProvider>

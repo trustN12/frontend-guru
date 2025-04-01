@@ -38,6 +38,8 @@ const Dashboard = () => {
   // }, []);
 
   // Load enrolled courses from Firestore on component mount
+ 
+ 
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
       if (!user) return; // Ensure user is logged in
@@ -123,18 +125,17 @@ const Dashboard = () => {
   const availableCourses = [
     {
       id: 1,
-      title: "JavaScript Intermediate",
+      title: "JavaScript Freebie",
       description:
         "Build a strong foundation in JavaScript with a focus on modern ES6+ features.",
-      price: 29900,
+      price: 19900,
       discountedPrice: 1000,
-      duration: "2 weeks",
+      duration: "2 days",
       topics: [
         "async/await",
         "Promises",
         "Destructuring",
         "Pollyfills",
-        "methods",
       ],
       videos: [
         {
@@ -167,41 +168,59 @@ const Dashboard = () => {
           duration: "11:44",
           url: "https://youtube.com/embed/u5ipjx_q9cs",
         },
+        {
+          id: 6,
+          title: "Top 4 Javascript Solution",
+          duration: "07:32",
+          url: "https://youtube.com/embed/lvp8iTHeUQ4",
+        },
+        {
+          id: 7,
+          title: "Top 2 Array Questions",
+          duration: "03:25",
+          url: "https://youtube.com/embed/w588WT1rdtk",
+        },
+        {
+          id: 8,
+          title: "Third largest element",
+          duration: "01:26",
+          url: "https://youtube.com/embed/6fLL9nA82jY",
+        },
       ],
     },
     {
       id: 2,
-      title: "React Fundamentals",
+      title: "React Freebie",
       description:
         "Learn React from the ground up, including components, props, state, and JSX.",
       price: 39900,
-      discountedPrice: 10000,
-      duration: "10 weeks",
-      topics: ["Components", "Props & State", "Hooks", "JSX"],
+      discountedPrice: 1000,
+      duration: "2 days",
+      topics: ["Components", "Props & State", "Mini Projects", "JSX"],
       videos: [
         {
           id: 1,
-          title: "React Basics",
-          duration: "20:15",
-          url: "https://www.youtube.com/embed/w7ejDZ8SWv8",
+          title: "React Most Asked Questions (Part-1)",
+          duration: "24:12",
+          url: "https://youtube.com/embed/3D9e8NNMKuo",
         },
         {
           id: 2,
-          title: "Components and Props",
-          duration: "25:10",
-          url: "https://www.youtube.com/embed/0sSYmRImgRY",
+          title: "React Most Asked Questions (Part-2)",
+          duration: "28:50",
+          url: "https://youtube.com/embed/JHsvB9vcH-Y",
         },
-        {
+        { 
           id: 3,
-          title: "State and Lifecycle",
-          duration: "23:05",
-          url: "https://www.youtube.com/embed/4ORZ1GmjaMc",
+          title: "QR Code Generator",
+          duration: "12:40",
+          url: "https://youtube.com/embed/PbcB5w4xMYY",
         },
         {
           id: 4,
-          title: "Hooks Deep Dive",
-          duration: "28:45",
-          url: "https://www.youtube.com/embed/TNhaISOUy6Q",
+          title: "Bubble Sort Visualizer",
+          duration: "11:10",
+          url: "https://youtube.com/embed/gLsi1QVXIOI",
         },
       ],
     },

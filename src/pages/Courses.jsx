@@ -15,6 +15,7 @@ const Courses = () => {
           Comprehensive Frontend Engineering Courses
         </SectionHeading>
         
+        
         <p className="mt-6 text-center text-lg text-muted-foreground max-w-3xl mx-auto mb-12 md:mb-16">
           Choose from a variety of specialized courses designed to help you master modern frontend development and advance your career.
         </p>
